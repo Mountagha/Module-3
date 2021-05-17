@@ -301,27 +301,39 @@ def tensor_matrix_multiply(
 
     # TODO: Implement for Task 3.2.
     size = np.prod(out_shape)
-    out_index = np.zeros((len(out), MAX_DIMS), np.int32)
-    a_index = np.zeros(MAX_DIMS, np.int32)
-    b_index = np.zeros(MAX_DIMS, np.int32)
-    print(a_storage.shape, b_storage.shape, out.shape)
+    out_index = np.zeros((len(out), len(out_shape)), np.int32)
+    a_index = np.zeros(len(a_shape), np.int32)
+    b_index = np.zeros(len(b_shape), np.int32)
+    # print(a_shape, b_shape, out_shape)
     for i in range(size):
         count(i, out_strides, out_index[i])
         o = index_to_position(out_index[i], out_strides)
         acc = 0.
+        a_indices = []
+        b_indices = []
         a_idxes = []
         b_idxes = []
         for s in range(len(a_storage)):
             count(s, a_strides, a_index)
+            broadcast_index(out_index[i], out_shape, a_shape, a_index) 
             if out_index[i][-2] == a_index[-2]: 
                 j = index_to_position(a_index, a_strides)
-                a_idxes.append(j)
+                a_idxes.append(a_index.tolist())
+                a_indices.append(j)
         for s in range(len(b_storage)):
-            count(s, b_strides, a_index)
-            if out_index[i][-1] == a_index[-1]: 
+            count(s, b_strides, b_index)
+            broadcast_index(out_index[i], out_shape, b_shape, b_index) 
+            if out_index[i][-1] == b_index[-1]:
                 j = index_to_position(b_index, b_strides)
-                b_idxes.append(j)
-        out[o] = sum([a_storage[j] * b_storage[k] for j, k in zip(a_idxes, b_idxes)]) 
+                b_idxes.append(b_index.tolist())
+                b_indices.append(j)
+        # print(len(a_indices), "=?", len(b_indices))
+        # print(a_indices, b_indices)
+        if len(a_indices) != len(b_indices):
+            print("\nshape {} {}".format(a_shape, b_shape))
+            print("indexes", a_idxes, b_idxes)
+            print(out_index[i])
+        # out[o] = sum([a_storage[j] * b_storage[k] for j,k in __builtin__.zip((a_storage, b_storage))]) 
 
 
 def matrix_multiply(a, b):

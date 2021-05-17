@@ -305,6 +305,7 @@ def tensor_matrix_multiply(
         o = index_to_position(out_index[i], out_strides)
         acc = 0.
         for s in range(len(out)):
+            print(type(out))
             count(s, a_strides, a_index)
             count(s, b_strides, b_index)
             if out_index[i][-2] == a_index[-2] and out_index[i][-1] == b_index[-1]:
